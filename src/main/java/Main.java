@@ -2,12 +2,11 @@ import zero.Color;
 import zero.GameApp;
 import zero.ImageRegion;
 import zero.Key;
-import zero.SpriteAnimation;
 import zero.Sound;
+import zero.SpriteAnimation;
 
 public class Main extends GameApp {
-    private SpriteAnimation petAnimation;
-    private double x = 280;
+    private Pet pet;
     private Sound chime;
 
     @Override public void settings() { size(640, 400); }
@@ -19,17 +18,17 @@ public class Main extends GameApp {
             imageRegion(sheet, 0, 531, 701, 561),
             imageRegion(sheet, 701, 531, 701, 561)
         };
-        petAnimation = new SpriteAnimation(8, frames);
+        pet = new Pet(new SpriteAnimation(8, frames));
         chime = loadSound("/pet/chime.wav");
         chime.setVolume(0.25);
     }
 
     @Override public void update(double seconds) {
-        if (keyDown(Key.LEFT)) x -= 160 * seconds;
-        if (keyDown(Key.RIGHT)) x += 160 * seconds;
-        x = Math.max(0, Math.min(x, width() - 80));
-        petAnimation.update(seconds);
-        if(keyPressed(Key.SPACE)){
+        int direction = 0;
+        if (keyDown(Key.LEFT)) direction--;
+        if (keyDown(Key.RIGHT)) direction++;
+        pet.update(direction, seconds, width());
+        if (keyPressed(Key.SPACE)) {
             chime.stop();
             chime.play();
         }
@@ -37,10 +36,10 @@ public class Main extends GameApp {
 
     @Override public void draw() {
         background(Color.rgb(240, 248, 255));
-        fill(Color.rgb(37, 79, 79));
+        fill(Color.rgb(47, 79, 79));
         textSize(20);
-        text("Click the canvas; arrows move, space chimes.", 20, 30);
-        image(petAnimation, x, 150, 80, 64);
+        text("Click the canvas; arrows move, Space chimes.", 20, 30);
+        pet.draw(this);
     }
 
     public static void main(String[] args) { launch(args); }
